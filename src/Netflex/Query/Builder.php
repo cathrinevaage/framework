@@ -339,7 +339,7 @@ class Builder
     $builder = new static(false, []);
 
     $callback($builder);
-    $query = $builder->getQuery(true);
+    $query = $builder->compileQuery(true, $operator);
 
     $compiledQuery = $this->compileQuery(true);
 
@@ -880,7 +880,7 @@ class Builder
 
       $error = json_decode($e->getResponse()->getBody());
 
-      throw new QueryException($this->getQuery(true), $error);
+      throw new QueryException($this->compileQuery(true), $error);
     }
   }
 
@@ -1137,7 +1137,7 @@ class Builder
    * @param bool $scoped
    * @return string
    */
-  protected function compileQuery(bool $scoped = false)
+  protected function compileQuery(bool $scoped = false, ?string $operator = 'AND')
   {
     if (!$scoped && $this->respectPublishingStatus) {
       $this->publishedAt(Carbon::now());
@@ -1151,7 +1151,7 @@ class Builder
       $this->where('directory_id', '=', $this->relation_id);
     }
 
-    $compiledQuery = implode(' AND ', array_filter(array_map(function ($term) {
+    $compiledQuery = implode(" {$operator} ", array_filter(array_map(function ($term) {
       return trim($term) === '()' ? null : $term;
     }, $this->query)));
 
