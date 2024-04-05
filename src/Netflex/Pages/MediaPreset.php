@@ -295,6 +295,7 @@ class MediaPreset implements JsonSerializable
     return $this->jsonSerialize();
   }
 
+  #[\ReturnTypeWillChange]
   public function jsonSerialize()
   {
     return [
