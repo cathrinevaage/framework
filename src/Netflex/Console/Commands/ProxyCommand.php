@@ -218,7 +218,7 @@ class ProxyCommand extends Command
             $this->basepath = realpath("{$this->home}/Library/Application Support/Herd/bin");
 
             $this->herd = "{$this->basepath}/herd";
-            $this->php = "{$this->basepath}/php82";
+            $this->php = "{$this->basepath}/php83";
             $this->tmpdir = sys_get_temp_dir();
             $this->path = "{$this->tmpdir}/herd/bin";
 
@@ -235,7 +235,7 @@ class ProxyCommand extends Command
             }
 
             if (!file_exists($this->php)) {
-                $this->error('PHP 8.2 is not installed in Herd.');
+                $this->error('PHP 8.3 is not installed in Herd.');
                 return 3;
             }
 
