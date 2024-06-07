@@ -78,6 +78,8 @@ class PagesServiceProvider extends ServiceProvider
       StaticContent::class,
     ]);
 
+    $this->loadViewsFrom(__DIR__ . '/../resources/views', 'pages');
+
     if ($prefix) {
       $this->loadViewComponentsAs($prefix, $components);
     } else {
