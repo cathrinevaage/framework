@@ -622,11 +622,20 @@ class RouteServiceProvider extends ServiceProvider
   public function extendEditorToolsToIncludeTags($automationMail): void
   {
     $this->app->extend('__editor_tools__', function ($string) use ($automationMail) {
+
+      $tags = config("automation_emails.tags.$automationMail->id.attributes", []);
+
+      if (config("automation_emails.tags.$automationMail->id.include_globals", false)) {
+        $tags = [
+          ...config("automation_emails.tags.global.attributes", []),
+          ...$tags,
+        ];
+      }
+
       return $this->insertBefore($string, '<div id="netflex-advanced-content-widget-header">', [
-        (string)view('pages::newsletter-tags', [
-          'tags' => config("automation_mails.tags.$automationMail->id", []),
-        ]),
-        '<!-- PRE: Header -->'
+        '<!-- PRE: Addons -->',
+        (string)view('pages::newsletter-tags', compact('tags')),
+        '<!-- POST: Addons -->'
       ]);
     });
   }
