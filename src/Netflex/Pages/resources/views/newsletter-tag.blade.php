@@ -2,7 +2,7 @@
 
 @if(is_array($tag))
   @foreach($tag as $key => $nextTag)
-    @include('pages::newsletter-tag', ['key' => $key, 'tag' => $nextTag, 'prefix' => [...($prefix ?? []), $key]])
+    @include('pages::newsletter-tag', ['key' => $key, 'tag' => $nextTag, 'prefix' => array_filter([...($prefix ?? []), $key])])
   @endforeach
 @else
 

@@ -5,8 +5,13 @@
 <div class="tag-list closed" style="overflow: scroll; display: flex; flex-direction: column; border-bottom: 1px #cdcdcd solid; ">
   <div style="padding: 10px 20px; font-size: 0.75rem;">
     @verbatim
-    For å legge inn data fra eksternt innhold kan du i tekster og lenker legge inn tags.
-    Her er en utdypende beskrivelse for tags <span style="padding: 4px 2px; background: #cdcdcd; border-radius: 6px; box-shadow: 1 1 2px rgba(0,0,0,0.2); font-family: mono; display: inline-block;">{{ data.order.secret }}</span>
+    <p>Det er mulig å bruke variabler i epostene. Disse variablene vil erstattes med korrekte verdier for kunden som skal motta mailen.</p>
+    <p>Noen av disse automasjonsmailene har tilgang på mer informasjon en bare kunde info, basert på bruksområdet. Dette kan være ting som ordre, billetter eller liknende.</p>
+    <p>
+      For å sette inn en variabel, trykk i et innholdsområde, slik at du kan redigere teksten der du ønsker å sette inn variabelen.
+      Trykk så på navnet på variabelen i listen under denne meldingen, eller skriv inn navnet på ønsket variabel med tegn rundt slik som dette
+      <div style="padding: 4px 2px; background: #cdcdcd; border-radius: 6px; box-shadow: 1 1 2px rgba(0,0,0,0.2); font-family: mono; display: inline-block;">{{ data.order.secret }}</div>
+    </p>
     @endverbatim
   </div>
   @include("pages::newsletter-tag", ['tag' => $tags, 'prefix' => ['data']])

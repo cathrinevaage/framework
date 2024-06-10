@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -623,16 +624,19 @@ class RouteServiceProvider extends ServiceProvider
   {
     $this->app->extend('__editor_tools__', function ($string) use ($automationMail) {
 
-      $tags = config("automation_emails.tags.$automationMail->id.attributes", []);
+      $tags = [];
 
-      if (config("automation_emails.tags.$automationMail->id.include_globals", false)) {
-        $tags = [
-          ...config("automation_emails.tags.global.attributes", []),
-          ...$tags,
-        ];
+      foreach (config("automation_emails.tags.mails.$automationMail->id.include", []) as $section) {
+        foreach (Arr::dot(config("automation_emails.tags.includes.$section", [])) as $key => $value) {
+          data_set($tags, $key, $value);
+        }
       }
 
-      return $this->insertBefore($string, '<div id="netflex-advanced-content-widget-header">', [
+      foreach (Arr::dot(config("automation_emails.tags.mails.$automationMail->id.attributes", [])) as $key => $value) {
+        data_set($tags, $key, $value);
+      }
+
+      return $this->insertBefore($string ?? '', '<div id="netflex-advanced-content-widget-header">', [
         '<!-- PRE: Addons -->',
         (string)view('pages::newsletter-tags', compact('tags')),
         '<!-- POST: Addons -->'
