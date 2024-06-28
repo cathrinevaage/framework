@@ -131,10 +131,10 @@ abstract class NetflexappConnectionProvider extends RouteServiceProvider
       }
 
       if ($this->deleteSignupsController) {
-        Route::post('signups/delete', [$this->deleteSignupsController, ''])
+        Route::post('signups/delete', [$this->deleteSignupsController, 'deleteSignups'])
+          ->name('netflexapp.actions.signups.delete');
       }
     });
-
 
 
   }
