@@ -5,6 +5,7 @@ namespace Netflex\Actions\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Netflex\Actions\Contracts\Reservations\ActionControllerContract;
+use Netflex\Actions\Contracts\Signups\DeleteSignupsControllerContract;
 use Netflex\Actions\Contracts\Signups\MoveSignupsControllerContract;
 use Netflex\Actions\Controllers\Orders\Refunds\FormController as OrdersRefundsFormController;
 use Netflex\Actions\Controllers\Reservations\FormController;
@@ -22,6 +23,7 @@ abstract class NetflexappConnectionProvider extends RouteServiceProvider
   private ?string $ordersRefundFormController = null;
   private ?string $ordersRefundActionController = null;
   private ?string $moveSignupsController = null;
+  private ?string $deleteSignupsController = null;
 
   public function register()
   {
@@ -39,20 +41,30 @@ abstract class NetflexappConnectionProvider extends RouteServiceProvider
   protected function setReservationsActionController(string $actionController)
   {
 
-    if ((new \ReflectionClass($actionController))->implementsInterface(ActionControllerContract::class)) {
+    $acc = ActionControllerContract::class;
+    if ((new \ReflectionClass($actionController))->implementsInterface($acc)) {
       $this->reservationsActionController = $actionController;
     } else {
-      $acc = ActionControllerContract::class;
       throw new InvalidActionClassException($actionController, $acc);
     }
   }
 
   protected function setMoveSignupsActionController(string $actionController)
   {
-    if ((new \ReflectionClass($actionController))->implementsInterface(MoveSignupsControllerContract::class)) {
+    $acc = MoveSignupsControllerContract::class;
+    if ((new \ReflectionClass($actionController))->implementsInterface($acc)) {
       $this->moveSignupsController = $actionController;
     } else {
-      $acc = ActionControllerContract::class;
+      throw new InvalidActionClassException($actionController, $acc);
+    }
+  }
+
+  protected function setDeleteSignupsActionController(string $actionController)
+  {
+    $acc = DeleteSignupsControllerContract::class;
+    if ((new \ReflectionClass($actionController))->implementsInterface($acc)) {
+      $this->deleteSignupsController = $actionController;
+    } else {
       throw new InvalidActionClassException($actionController, $acc);
     }
   }
@@ -89,41 +101,41 @@ abstract class NetflexappConnectionProvider extends RouteServiceProvider
 
   public function map()
   {
-    if ($this->reservationsActionController) {
-      $actionController = $this->reservationsActionController;
-      Route::middleware('api')->prefix(".well-known/netflex/actions/")->group(function () use ($actionController) {
-        Route::middleware(WebhookAuthMiddleware::class)->group(function () use ($actionController) {
-          Route::any('reservations/form', [FormController::class, 'createForm'])->name('netflexapp.actions.reservations.form');
-          Route::post("reservations/create", [$actionController, 'create'])->name("netflexapp.actions.reservations.create");
-          Route::post("reservations/update", [$actionController, 'update'])->name("netflexapp.actions.reservations.update");
-          Route::post("reservations/destroy", [$actionController, 'destroy'])->name("netflexapp.actions.reservations.destroy");
-        });
-      });
-    }
 
-    if ($this->ordersRefundActionController) {
-      $formDescriber = $this->ordersRefundFormController;
-      $actionController = $this->ordersRefundActionController;
 
-      Route::group([
-        'middleware' => ['api', WebhookAuthMiddleware::class],
-        'prefix' => '.well-known/netflex/actions/'
-      ], function () use ($formDescriber, $actionController) {
+    Route::group([
+      'middleware' => ['api', WebhookAuthMiddleware::class],
+      'prefix' => '.well-known/netflex/actions/'
+    ], function () {
+
+      if ($this->reservationsActionController) {
+        $actionController = $this->reservationsActionController;
+        Route::any('reservations/form', [FormController::class, 'createForm'])->name('netflexapp.actions.reservations.form');
+        Route::post("reservations/create", [$actionController, 'create'])->name("netflexapp.actions.reservations.create");
+        Route::post("reservations/update", [$actionController, 'update'])->name("netflexapp.actions.reservations.update");
+        Route::post("reservations/destroy", [$actionController, 'destroy'])->name("netflexapp.actions.reservations.destroy");
+      }
+
+      if ($this->ordersRefundActionController) {
+        $formDescriber = $this->ordersRefundFormController;
+        $actionController = $this->ordersRefundActionController;
         Route::any('orders/refunds/form/order', [$formDescriber, 'renderRefundOrderForm']);
         Route::any('orders/refunds/form/cartitem', [$formDescriber, 'renderRefundCartItemForm']);
         Route::post('orders/refunds/refund/order', [$actionController, 'refundOrder']);
         Route::post('orders/refunds/refund/cartitem', [$actionController, 'refundCartItem']);
-      });
-    }
+      }
 
-    if ($this->moveSignupsController) {
-      Route::group([
-        'middleware' => ['api', WebhookAuthMiddleware::class],
-        'prefix' => '.well-known/netflex/actions/'
-      ], function () use ($formDescriber, $actionController) {
+      if ($this->moveSignupsController) {
         Route::get('signups/move/{id}', [$this->moveSignupsController, 'moveSignupForm']);
         Route::post('signups/move/{id}', [$this->moveSignupsController, 'moveSignupAction']);
-      });
-    }
+      }
+
+      if ($this->deleteSignupsController) {
+        Route::post('signups/delete', [$this->deleteSignupsController, ''])
+      }
+    });
+
+
+
   }
 }
