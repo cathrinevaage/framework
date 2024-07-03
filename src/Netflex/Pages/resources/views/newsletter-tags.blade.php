@@ -14,7 +14,7 @@
     </p>
     @endverbatim
   </div>
-  @include("pages::newsletter-tag", ['tag' => $tags, 'prefix' => ['data']])
+  @include("pages::newsletter-tag", ['tag' => $tags, 'prefix' => []])
 </div>
 <style>
   .tag-list {
