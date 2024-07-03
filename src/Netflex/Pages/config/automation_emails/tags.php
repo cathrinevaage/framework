@@ -12,21 +12,21 @@ return [
    */
   'includes' => [
     'customer' => [
-      '' => [
-        '_group_header' => 'Kundeinformasjon',
-        'firstname' => 'Fornavn',
-        'surname' => 'Etternavn',
-        'mail' => 'E-post addresse'
-      ],
+      '_group_header' => 'Kundeinformasjon',
+      'firstname' => 'Fornavn',
+      'surname' => 'Etternavn',
+      'mail' => 'E-post addresse'
     ],
     'order' => [
-      'order' => [
-        '_group_header' => "Ordre",
-        'secret' => 'Ordrens hemmelige kode, ofte brukt i URLer som kvitteringsurler',
-        'checkout' => [
-          'firstname' => 'Kundens fornavn',
-          'surname' => 'Kundens etternavn'
-        ]
+      'data' => [
+        'order' => [
+          '_group_header' => "Ordre",
+          'secret' => 'Ordrens hemmelige kode, ofte brukt i URLer som kvitteringsurler',
+          'checkout' => [
+            'firstname' => 'Kundens fornavn',
+            'surname' => 'Kundens etternavn'
+          ]
+        ],
       ],
     ],
     'article' => [
@@ -63,8 +63,6 @@ return [
           'has_paid' => 'Om brukeren har betalt', /// This resolves to 'data.membership.has_paid'
           'paid_at' => 'Brukeren betalte den'   /// This resolves to 'data.membership.paid_at
         ],
-        'kake.is_it_a_lie' => 'Is a lie', /// This resolves to 'data.kake',
-        'kake.is_lie' => 'Yes if cake is lie'/// This resolves to 'data.kake.is_lie'
       ],
     ]
   ]

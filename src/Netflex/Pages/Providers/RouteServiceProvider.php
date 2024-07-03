@@ -105,8 +105,7 @@ class RouteServiceProvider extends ServiceProvider
     $this->mapRobots();
 
     $this->mapSitemap();
-    //dd(collect(app('router')->getRoutes()->getRoutes())->pluck("uri")->toArray());
-    //
+
   }
 
   /**
