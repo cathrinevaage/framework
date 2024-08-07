@@ -323,7 +323,7 @@ class Newsletter extends QueryableModel
   public function renderAndSave()
   {
     $content = $this->render()->toHtml();
-    $this->output = $this->inlineCss($content);
+    $this->output = mb_convert_entities($this->inlineCss($content));
     $this->outputText = mb_convert_entities((new Html2Text($content))->getText());
     $this->save();
   }
