@@ -168,12 +168,13 @@ class Newsletter extends QueryableModel
    * @param string $content
    * @return string
    */
-  public function inlineCss(string $content): string
+  public function inlineCss(string $content, $tags = ['src', 'href']): string
   {
     $replaceWith = "wer90erjgfierjgi43j5829uy45293u428973yreguhrueirjghui9efjrtu89eiodkfjghrui9ekopwdfiu98gri0tk3";
-    $convertedContent = str_replace('href', $replaceWith, $content);
+    $replacements = array_map(fn($str) => "$replaceWith$str", $tags);
+    $convertedContent = str_replace($tags, $replacements, $content);
     $convertedContent = (new CssToInlineStyles())->convert($convertedContent);
-    return str_replace($replaceWith, 'href', $convertedContent);
+    return str_replace($replacements, $tags, $convertedContent);
   }
 
   /**
@@ -305,7 +306,7 @@ class Newsletter extends QueryableModel
   public function renderPreview($type = 'html')
   {
     $content = $this->render()->toHtml();
-    $output = (new CssToInlineStyles())->convert($content);
+    $output = $this->inlineCss($content);
     $outputText = (new Html2Text($content))->getText();
     switch ($type) {
       case 'text':
