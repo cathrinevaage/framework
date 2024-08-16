@@ -2,19 +2,15 @@
 
 namespace Netflex\Newsletters;
 
-use Exception;
 use Html2Text\Html2Text;
-use Throwable;
-
-use Netflex\Query\QueryableModel;
-use Netflex\Query\Exceptions\NotFoundException;
-
-use Netflex\Newsletters\Traits\CastsDefaultFields;
-use Netflex\Newsletters\Traits\HidesDefaultFields;
-
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\HtmlString;
+use Netflex\Newsletters\Traits\CastsDefaultFields;
+use Netflex\Newsletters\Traits\HidesDefaultFields;
+use Netflex\Query\Exceptions\NotFoundException;
+use Netflex\Query\QueryableModel;
+use Throwable;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 /**
@@ -169,6 +165,19 @@ class Newsletter extends QueryableModel
   const TYPE_TRANSACTIONAL_CAMPAIGN = 'transactional_campaign';
 
   /**
+   * @param string $content
+   * @return string
+   */
+  public function inlineCss(string $content, $tags = ['src', 'href']): string
+  {
+    $replaceWith = "wer90erjgfierjgi43j5829uy45293u428973yreguhrueirjghui9efjrtu89eiodkfjghrui9ekopwdfiu98gri0tk3";
+    $replacements = array_map(fn($str) => "$replaceWith$str", $tags);
+    $convertedContent = str_replace($tags, $replacements, $content);
+    $convertedContent = (new CssToInlineStyles())->convert($convertedContent);
+    return str_replace($replacements, $tags, $convertedContent);
+  }
+
+  /**
    * Retrieves a record by key
    *
    * @param int|null $relationId
@@ -184,9 +193,9 @@ class Newsletter extends QueryableModel
   /**
    * Inserts a new record, and returns its id
    *
-   * @property int|null $relationId
-   * @property array $attributes
    * @return mixed
+   * @property array $attributes
+   * @property int|null $relationId
    */
   protected function performInsertRequest(?int $relationId = null, array $attributes = [])
   {
@@ -231,8 +240,8 @@ class Newsletter extends QueryableModel
   /**
    * Retrieve the model for a bound value.
    *
-   * @param  mixed  $rawValue
-   * @param  string|null $field
+   * @param mixed $rawValue
+   * @param string|null $field
    * @return \Illuminate\Database\Eloquent\Model|null
    * @throws NotFoundException
    */
@@ -264,7 +273,8 @@ class Newsletter extends QueryableModel
    *
    * @return NewsletterPage|null
    */
-  public function getPageAttribute(): ?NewsletterPage {
+  public function getPageAttribute(): ?NewsletterPage
+  {
     if ($page = NewsletterPage::where('id', $this->page_id)->first()) {
       return $page->loadRevision($page->revision);
     }
@@ -277,14 +287,15 @@ class Newsletter extends QueryableModel
    *
    * @return HtmlString
    */
-  public function render(): HtmlString {
+  public function render(): HtmlString
+  {
     if ($page = $this->page) {
-        App::setLocale($page->lang ?? App::getLocale());
-        return new HtmlString($page->toResponse(request()));
+      App::setLocale($page->lang ?? App::getLocale());
+      return new HtmlString($page->toResponse(request()));
     }
 
     return new HtmlString;
-}
+  }
 
   /**
    * Reunders preview of newsletter in html or text
@@ -295,9 +306,9 @@ class Newsletter extends QueryableModel
   public function renderPreview($type = 'html')
   {
     $content = $this->render()->toHtml();
-    $output = (new CssToInlineStyles())->convert($content);
+    $output = $this->inlineCss($content);
     $outputText = (new Html2Text($content))->getText();
-    switch($type) {
+    switch ($type) {
       case 'text':
         return $outputText;
       default:
@@ -312,10 +323,10 @@ class Newsletter extends QueryableModel
    */
   public function renderAndSave()
   {
-      $content = $this->render()->toHtml();
-      $this->output = mb_convert_entities((new CssToInlineStyles())->convert($content));
-      $this->outputText = mb_convert_entities((new Html2Text($content))->getText());
-      $this->save();
+    $content = $this->render()->toHtml();
+    $this->output = mb_convert_entities($this->inlineCss($content));
+    $this->outputText = mb_convert_entities((new Html2Text($content))->getText());
+    $this->save();
   }
 
 }
