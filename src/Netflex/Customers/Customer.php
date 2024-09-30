@@ -49,6 +49,10 @@ class Customer extends Model implements Authenticatable
 
   protected $resolvableField = 'mail';
 
+  protected $fillable = [
+    'mail',
+  ];
+
   /**
    * Indicates if we should respect the models publishing status when retrieving it.
    *
@@ -301,7 +305,7 @@ class Customer extends Model implements Authenticatable
 
   /**
    * Determines if the customer has a currently active consent assignment for the given consent
-   * 
+   *
    * @param Consent|int $consent
    * @return boolean
    */
@@ -358,7 +362,7 @@ class Customer extends Model implements Authenticatable
 
   /**
    * Assign consent to customer
-   * 
+   *
    * @param Consent|int $consent
    * @param string $source
    * @param array $options
